@@ -20,7 +20,16 @@ public:
     void generateBlock();
     void copyToCurrentBlock(int block[4][4]);
     void rotate();
+    void mapTotheGrid();
+    QPoint getPicePossition(int x, int y);
     void drawFallingFigure(QPainter *painter);
+    void bottomCollision();
+    void piceCollision();
+    void leftCollision();
+    void rightCollision();
+    void deletingLines();
+
+    //QSize sizeHint() const { return QSize(200, 400);}
 
 protected slots:
     void falling();
@@ -39,8 +48,10 @@ private:
     QPoint currBlockPos;
     int currBlock[4][4];
     QTimer *timer;
+    QList<int> lines;
 
     bool landed;
+    bool fullLine;
 
 };
 #endif // TETRISWIDGET_H

@@ -4,11 +4,15 @@
 #include <QRandomGenerator>
 #include <QKeyEvent>
 #include <QTimer>
+#include <QApplication>
+#include <QScreen>
+#include <QDebug>
 
 
 TetrisWidget::TetrisWidget(QWidget *parent)
     : QWidget(parent)
 {
+
     fillEmptyGrids();
     landed = false;
 
@@ -27,6 +31,12 @@ void TetrisWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     drawFallingFigure(&painter);
 
+    for(int i = 0; i < WIDTH; ++i)
+        for(int j = 0; j < HEIGHT; ++j)
+            if(gameGrid[i][j] == Part)
+                painter.drawRoundRect(i * CellWidth, j * CellHeight, CellWidth - 1 , CellHeight - 1,
+                                      5, 5);
+
 }
 
 void TetrisWidget::keyPressEvent(QKeyEvent *event)
@@ -34,15 +44,21 @@ void TetrisWidget::keyPressEvent(QKeyEvent *event)
     switch(event->key()){
     case Qt::Key_Space:
         rotate();
+        leftCollision();
+        rightCollision();
         break;
     case Qt::Key_Left:
         currBlockPos.rx() -= 1;
+        leftCollision();
         break;
     case Qt::Key_Right:
         currBlockPos.rx() += 1;
+        rightCollision();
         break;
     case Qt::Key_Down:
         currBlockPos.ry() += 1;
+        piceCollision();
+        bottomCollision();
         break;
     default:
         QWidget::keyPressEvent(event);
@@ -87,12 +103,17 @@ void TetrisWidget::generateBlock()
                            {0, 0, 1, 0},
                            {0, 0, 1, 0}};
 
-        int fourth[4][4] = {{1, 0, 0, 0},
+        int fourth[4][4] = {{0, 0, 1, 0},
                             {1, 1, 1, 0},
                             {0, 0, 0, 0},
                             {0, 0, 0, 0}};
 
-        const int rand = randGenerator(4);
+        int fifth[4][4] = {{0, 0, 0, 0},
+                           {0, 0, 1, 0},
+                           {0, 1, 1, 1},
+                           {0, 0, 0, 0}};
+
+        const int rand = randGenerator(5);
 
         switch (rand) {
         case 0:
@@ -106,6 +127,9 @@ void TetrisWidget::generateBlock()
             break;
         case 3:
             copyToCurrentBlock(fourth);
+            break;
+        case 4:
+            copyToCurrentBlock(fifth);
             break;
         default:
             break;
@@ -123,7 +147,8 @@ void TetrisWidget::copyToCurrentBlock(int block[4][4])
     for(int i = 0; i < 4; ++i)
         for(int j = 0; j < 4; ++j)
             currBlock[i][j] = block[i][j];
-    currBlockPos = QPoint(WIDTH / 2 - 1, 0);
+
+    currBlockPos = QPoint(WIDTH / 2 - 2, 0);
 }
 
 void TetrisWidget::rotate()
@@ -139,25 +164,129 @@ void TetrisWidget::rotate()
                 currBlock[j][4 - 1 - i] = temp;
         }
     }
+
+}
+
+
+void TetrisWidget::mapTotheGrid()
+{
+    for(int i = 0; i < 4; ++i)
+        for(int j = 0; j < 4; ++j)
+            if(currBlock[j][i] == 1)
+            {
+                QPoint pos = getPicePossition(i, j);
+                gameGrid[pos.x()][pos.y()] = Part;
+            }
+    for(int i = 0; i < 4; ++i)
+        for(int j = 0; j < 4; ++j)
+            currBlock[i][j] = 0;
+}
+
+
+QPoint TetrisWidget::getPicePossition(int x, int y)
+{
+    return QPoint(currBlockPos.x() + x, currBlockPos.y() + y);
 }
 
 void TetrisWidget::drawFallingFigure(QPainter *painter)
 {
     generateBlock();
-
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setBrush(Qt::red);
 
     for(int i = 0; i < 4; ++i)
+    {
         for(int j = 0; j < 4; ++j)
-            if(currBlock[j][i] != 0)
-                painter->drawRoundedRect((currBlockPos.x() + i) * CellWidth, (currBlockPos.y() + j) * CellHeight,
-                                         CellWidth, CellHeight, 5, 5);
+        {
+            if(currBlock[j][i] == 1)
+            {
+                QPoint pos = getPicePossition(i, j);
+                painter->drawRoundRect(pos.x() * CellWidth, pos.y() * CellHeight,
+                                       CellWidth, CellHeight, 5, 5);
+            }
+        }
+    }
 }
+
+void TetrisWidget::bottomCollision()
+{
+    piceCollision();
+    for(int i = 0; i < 4; ++i)
+    {
+        for(int j = 0; j < 4; ++j)
+        {
+            if(currBlock[j][i] == 1)
+                if(getPicePossition(i, j).y() == HEIGHT - 1)
+                {
+                    landed = false;
+                    mapTotheGrid();
+                }
+        }
+    }
+}
+
+void TetrisWidget::piceCollision()
+{
+    for(int i = 0; i < 4; ++i)
+    {
+        for(int j = 0; j < 4; ++j)
+        {
+            if(currBlock[j][i] == 1)
+            {
+                QPoint pos = getPicePossition(i, j);
+                if(gameGrid[pos.x()][pos.y()] == Part)
+                {
+                    currBlockPos.ry() -= 1;
+                    landed = false;
+                    mapTotheGrid();
+                }
+            }
+        }
+    }
+}
+
+void TetrisWidget::leftCollision()
+{
+    for(int i = 0; i < 4; ++i)
+    {
+        for(int j = 0; j < 4; ++j)
+        {
+            if(currBlock[j][i] == 1)
+            {
+                if(getPicePossition(i, j).x() < 0)
+                    while(getPicePossition(i, j).x() != 0)
+                        currBlockPos.rx() += 1;
+            }
+        }
+    }
+}
+
+void TetrisWidget::rightCollision()
+{
+    for(int i = 0; i < 4; ++i)
+    {
+        for(int j = 0; j < 4; ++j)
+        {
+            if(currBlock[j][i] == 1)
+            {
+                if(getPicePossition(i, j).x() >= WIDTH)
+                    while(getPicePossition(i, j).x() != WIDTH - 1)
+                        currBlockPos.rx() -= 1;
+            }
+        }
+    }
+}
+
+void TetrisWidget::deletingLines()
+{
+
+}
+
 
 void TetrisWidget::falling()
 {
     currBlockPos.ry() += 1;
+    bottomCollision();
     update();
 }
 
