@@ -32,8 +32,6 @@ public:
     void deletingLines();
     void deleteLine(int row);
 
-   // QSize sizeHint() const { return QSize(200, 400);}
-
 protected slots:
     void falling();
 

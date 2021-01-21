@@ -22,6 +22,7 @@ TetrisWidget::TetrisWidget(QWidget *parent)
     timer = new QTimer;
     connect(timer, SIGNAL(timeout()), this, SLOT(falling()));
     timer->start(interval);
+
     setWindowTitle(title + QString::number(score));
 
 }
@@ -33,8 +34,6 @@ TetrisWidget::~TetrisWidget()
 void TetrisWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    painter.setWindow(rect());
-    painter.setViewport(rect());
     drawFallingFigure(&painter);
 
     for(int i = 0; i < WIDTH; ++i)
@@ -168,7 +167,6 @@ void TetrisWidget::generateBlock()
             break;
 
     }
-        qDebug() << randNum;
 
   }
 
