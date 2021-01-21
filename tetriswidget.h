@@ -19,7 +19,7 @@ public:
     int fillEmptyGrids();
     void generateBlock();
     void copyToCurrentBlock(int block[4][4]);
-    void rotate();
+
     void mapTotheGrid();
     QPoint getPicePossition(int x, int y);
     void drawFallingFigure(QPainter *painter);
@@ -34,6 +34,7 @@ public:
 
 protected slots:
     void falling();
+    void rotate();
 
 protected:
     void paintEvent(QPaintEvent *event);

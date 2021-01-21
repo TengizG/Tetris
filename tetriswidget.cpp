@@ -51,7 +51,7 @@ void TetrisWidget::keyPressEvent(QKeyEvent *event)
         rotate();
         leftCollision();
         rightCollision();
-        update();
+       // update();
         break;
     case Qt::Key_Left:
         currBlockPos.rx() -= 1;
