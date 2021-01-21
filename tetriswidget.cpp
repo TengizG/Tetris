@@ -118,9 +118,9 @@ void TetrisWidget::generateBlock()
                             {0, 0, 0, 0},
                             {0, 0, 0, 0}};
 
-        int fifth[4][4] = {{0, 0, 0, 0},
-                           {0, 0, 1, 0},
+        int fifth[4][4] = {{0, 0, 1, 0},
                            {0, 1, 1, 1},
+                           {0, 0, 0, 0},
                            {0, 0, 0, 0}};
 
         int six[4][4] = {{1, 0, 0, 0},
@@ -138,7 +138,7 @@ void TetrisWidget::generateBlock()
                            {0, 0, 0, 0},
                            {0, 0, 0, 0}};
 
-        const int randNum = randGenerator(7);
+        const int randNum = randGenerator(8);
         switch (randNum) {
         case 0:
             copyToCurrentBlock(first);
@@ -376,7 +376,7 @@ void TetrisWidget::deleteLine(int row)
 
 
 void TetrisWidget::falling()
-{
+{  
     currBlockPos.ry() += 1;
     wallCollision();
     bottomCollision();
