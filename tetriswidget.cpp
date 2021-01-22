@@ -51,7 +51,6 @@ void TetrisWidget::keyPressEvent(QKeyEvent *event)
         rotate();
         leftCollision();
         rightCollision();
-       // update();
         break;
     case Qt::Key_Left:
         currBlockPos.rx() -= 1;
@@ -97,9 +96,9 @@ int TetrisWidget::fillEmptyGrids()
 void TetrisWidget::generateBlock()
 {
     if (!landed) {
-        int first[4][4] = {{0, 1, 1, 0},
+        int first[4][4] = {{0, 0, 0, 0},
                            {0, 1, 1, 0},
-                           {0, 0, 0, 0},
+                           {0, 1, 1, 0},
                            {0, 0, 0, 0}};
 
         int second[4][4] = {{0, 0, 1, 0},
@@ -112,19 +111,19 @@ void TetrisWidget::generateBlock()
                            {0, 0, 1, 0},
                            {0, 0, 1, 0}};
 
-        int fourth[4][4] = {{0, 0, 1, 0},
+        int fourth[4][4] = {{0, 0, 0, 0},
+                            {0, 0, 1, 0},
                             {1, 1, 1, 0},
-                            {0, 0, 0, 0},
                             {0, 0, 0, 0}};
 
-        int fifth[4][4] = {{0, 0, 1, 0},
+        int fifth[4][4] = {{0, 0, 0, 0},
+                           {0, 0, 1, 0},
                            {0, 1, 1, 1},
-                           {0, 0, 0, 0},
                            {0, 0, 0, 0}};
 
-        int six[4][4] = {{1, 0, 0, 0},
+        int six[4][4] = {{0, 0, 0, 0},
+                         {1, 0, 0, 0},
                          {1, 1, 1, 0},
-                         {0, 0, 0, 0},
                          {0, 0, 0, 0}};
 
         int seven[4][4] = {{0, 1, 0, 0},
@@ -132,8 +131,8 @@ void TetrisWidget::generateBlock()
                            {0, 0, 1, 0},
                            {0, 0, 0, 0}};
 
-        int eight[4][4] = {{0, 0, 1, 0},
-                           {0, 0, 0, 0},
+        int eight[4][4] = {{0, 0, 0, 0},
+                           {0, 1, 0, 0},
                            {0, 0, 0, 0},
                            {0, 0, 0, 0}};
 

@@ -23,6 +23,7 @@ public:
     void mapTotheGrid();
     QPoint getPicePossition(int x, int y);
     void drawFallingFigure(QPainter *painter);
+    void rotate();
     void bottomCollision();
     bool piceCollision();
     void leftCollision();
@@ -34,7 +35,7 @@ public:
 
 protected slots:
     void falling();
-    void rotate();
+
 
 protected:
     void paintEvent(QPaintEvent *event);
