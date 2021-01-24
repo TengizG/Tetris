@@ -49,8 +49,6 @@ void TetrisWidget::keyPressEvent(QKeyEvent *event)
     switch(event->key()){
     case Qt::Key_Space:
         rotate();
-        leftCollision();
-        rightCollision();
         break;
     case Qt::Key_Left:
         currBlockPos.rx() -= 1;
@@ -64,8 +62,7 @@ void TetrisWidget::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Down:
         currBlockPos.ry() += 1;
-        piceCollision();
-        bottomCollision();
+        landing();
         update();
         break;
     default:
@@ -186,7 +183,7 @@ void TetrisWidget::copyToCurrentBlock(int block[4][4])
 void TetrisWidget::rotate()
 {
     for(int i = 0; i < 4 / 2; i++)
-      {
+    {
         for(int j = i; j < 4 - i - 1; j++)
         {
                 int temp = currBlock[i][j];
@@ -196,6 +193,9 @@ void TetrisWidget::rotate()
                 currBlock[j][4 - 1 - i] = temp;
         }
     }
+    leftCollision();
+    rightCollision();
+    bottomColision();
 
 }
 
@@ -240,10 +240,11 @@ void TetrisWidget::drawFallingFigure(QPainter *painter)
     }
 }
 
-void TetrisWidget::bottomCollision()
+void TetrisWidget::landing()
 {
     deletingLines();
     piceCollision();
+    bottomColision();
     for(int i = 0; i < 4; ++i)
     {
         for(int j = 0; j < 4; ++j)
@@ -317,6 +318,22 @@ void TetrisWidget::rightCollision()
     }
 }
 
+void TetrisWidget::bottomColision()
+{
+    for(int i = 0; i < 4; ++i)
+    {
+        for(int j = 0; j < 4; ++j)
+        {
+            if(currBlock[j][i] == 1)
+            {
+                if(getPicePossition(i, j).y() >= HEIGHT)
+                    while(getPicePossition(i, j).y() != HEIGHT - 1)
+                        currBlockPos.ry() -= 1;
+            }
+        }
+    }
+}
+
 void TetrisWidget::wallCollision()
 {
     if(piceCollision())
@@ -373,10 +390,10 @@ void TetrisWidget::deleteLine(int row)
 
 
 void TetrisWidget::falling()
-{  
+{
     currBlockPos.ry() += 1;
+    landing();
     wallCollision();
-    bottomCollision();
     update();
 }
 

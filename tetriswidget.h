@@ -24,10 +24,11 @@ public:
     QPoint getPicePossition(int x, int y);
     void drawFallingFigure(QPainter *painter);
     void rotate();
-    void bottomCollision();
+    void landing();
     bool piceCollision();
     void leftCollision();
     void rightCollision();
+    void bottomColision();
     void wallCollision();
     void restartGame();
     void deletingLines();
